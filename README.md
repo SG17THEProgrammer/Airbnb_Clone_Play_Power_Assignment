@@ -1,61 +1,115 @@
 # Airbnb Listing Page Clone
 
-Next.js 15 (App Router) + TypeScript + Tailwind CSS clone of an Airbnb
-listing page, including the Photo Tour and Lightbox overlays. Desktop only,
-per assignment scope. No backend — all data is in `src/data/listing.ts`.
+A desktop-only, pixel-fidelity clone of an Airbnb listing page, built with
+Next.js 15 (App Router), TypeScript, and Tailwind CSS — including the full
+Photo Tour and Lightbox overlay experiences.
 
-## Run locally
+**Reference cloned:** https://airbnb-clone-umber-two.vercel.app
+
+## Features
+
+- **Listing page** — hero photo grid, guest-favourite rating badge, host
+  section, highlights, description with functional show more/less, "Where
+  you'll sleep," amenities (with categorized modal), calendar with real date
+  math, ratings breakdown, reviews with per-card show more/less, map section,
+  "Meet your host" with co-hosts, things to know, and a "More stays nearby"
+  carousel.
+- **Sticky sub-nav** — Photos / Amenities / Reviews / Location tabs that
+  appear once you scroll past the hero photos, with scroll-spy (auto-
+  highlights the section you're in) and smooth-scroll navigation.
+- **Photo Tour overlay** — full-screen gallery grouped by room, with a
+  sticky category nav and two-column (sticky label + scrolling photos)
+  layout per room.
+- **Lightbox overlay** — single-photo viewer with prev/next arrows,
+  `←`/`→` keyboard navigation, and a room-name heading.
+- **Booking card** — sticky through the Calendar section only, animates out
+  of the way when the sub-nav appears, gradient Reserve button.
+- **Save button** — toggles a bottom "Saved to wishlist" / "Removed from
+  wishlist" toast.
+- Built with accessibility as a first-class concern: ARIA dialog roles,
+  focus management, keyboard support, and visible focus rings throughout.
+
+## Tech stack
+
+- **Framework:** Next.js 15 (App Router, Turbopack)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **Icons:** lucide-react
+- **Data:** static, in `src/data/listing.ts` — no backend required
+
+## Getting started
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open http://localhost:3000
+Open [http://localhost:3000](http://localhost:3000).
 
-## Build
+### Type-check and build
 
 ```bash
+npx tsc --noEmit
 npm run build
-npm start
 ```
 
-## Deploy
+Both should pass with zero errors before considering any change complete.
 
-Push to a new Vercel project (or `vercel deploy` from this folder). No env
-vars required — the sample listing photos load from images.unsplash.com,
-already whitelisted in `next.config.ts`.
+## Project structure
 
-## Structure
+```
+src/
+  app/
+    page.tsx           # composes the full listing page, owns overlay state
+    layout.tsx
+    globals.css         # design tokens, keyframes, shared utility classes
+  components/           # one component per section/overlay
+  data/
+    listing.ts           # all listing content: photos by room, amenities, reviews, host, pricing
+.claude/
+  agents/                # sub-agent configs (see below)
+architecture/
+  architecture-diagram.{svg,png,pdf}
+CLAUDE.md                # project instructions for agentic coding tools
+PROMPTS.md               # AI-assisted development prompt log
+```
 
-- `src/app/page.tsx` — composes the listing page, owns Photo Tour / Lightbox
-  open state.
-- `src/components/PhotoGrid.tsx` — hero 5-tile photo grid + "Show all photos".
-- `src/components/PhotoTour.tsx` — full-screen gallery overlay.
-- `src/components/Lightbox.tsx` — single-photo viewer, keyboard ←/→, focus trap.
-- `src/components/ListingHeader.tsx`, `HostSection.tsx`, `Amenities.tsx`,
-  `Reviews.tsx`, `BookingCard.tsx` — listing page sections.
-- `src/data/listing.ts` — sample content.
-- `architecture/architecture-diagram.svg` — production-scale architecture diagram.
-- `PROMPTS.md` — AI prompt log used during development.
-- `.claude/agents/` — sub-agent configs used for fidelity + code-quality review.
+## Deployment
 
-## Known gap — please read
+Deploy to Vercel (or any Next.js-compatible host) with no environment
+variables required — listing photos load from `images.unsplash.com`, already
+whitelisted in `next.config.ts`.
 
-The reference site (https://airbnb-clone-umber-two.vercel.app) blocks
-automated crawling (robots.txt), so this build follows Airbnb's real,
-well-documented listing-page conventions rather than a pixel-scrape of that
-exact reference. **Before submitting, open the reference site next to this
-clone and adjust:**
+```bash
+vercel deploy
+```
 
-- Exact spacing/padding values (hero grid gap, section padding, card
-  border-radius).
-- Exact copy (title, description, amenity names) if the reference uses
-  different sample data.
-- Any animation timing differences (hover scale amount, overlay fade
-  duration).
-- Confirm the booking card's sticky offset matches the reference's scroll
-  behavior.
+## Sub-agents
 
-The `ui-fidelity-reviewer` sub-agent config is set up specifically for this
-comparison pass — run it with side-by-side screenshots once you have them.
+Three Claude sub-agent configs live in `.claude/agents/`:
+
+| Agent | Purpose |
+|---|---|
+| `ui-fidelity-reviewer.md` | Compares rendered output against reference screenshots — layout, spacing, typography, color. |
+| `code-quality-reviewer.md` | Checks component boundaries, type safety, build health, dead code. |
+| `interaction-accessibility-reviewer.md` | Checks keyboard nav, focus management, ARIA semantics, and animation/transition parity. |
+
+## Known gaps (intentional placeholders, not oversights)
+
+- **Map** — static visual placeholder, not a real interactive map (no Maps
+  API key available). Swap in a real Google Maps/Mapbox embed.
+- **No backend** — all data is static; no database or API layer (per
+  assignment scope, backend was optional).
+- **Desktop only** — no mobile responsive layout, per assignment scope.
+
+## Architecture
+
+See `architecture/architecture-diagram.pdf` for the production-scale
+scaling strategy (CDN/edge → API gateway → per-domain microservices → event
+bus → Postgres/Redis/Elasticsearch/S3 → observability → CI/CD with
+multi-region rollout).
+
+## AI-assisted development
+
+This project was built with Claude in an agentic workflow — see
+`PROMPTS.md` for the full prompt sequence and process notes.
