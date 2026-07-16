@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Star } from "lucide-react";
 
 const TABS = ["Photos", "Amenities", "Reviews", "Location"];
-const SUBNAV_OFFSET = 150; // px — fixed header (80px) + this nav's own height, used for scroll-spy + scroll target offset
+const SUBNAV_OFFSET = 68; // nav's height, used for scroll-spy + scroll target offset
 
 interface StickySubNavProps {
   currency: string;
@@ -23,24 +23,27 @@ export default function StickySubNav({
   reviewCount,
   onVisibilityChange,
 }: StickySubNavProps) {
-  const [visible, setVisible] = useState(false);
-  const [activeTab, setActiveTab] = useState("Photos");
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const isClickScrolling = useRef(false);
+  const [visible, setVisible] = useState(false); // Controls whether the sticky navbar is shown.
+  const [activeTab, setActiveTab] = useState("Photos"); // Stores which tab is currently active.
+  const sentinelRef = useRef<HTMLDivElement>(null); //invisible marker placed just after the hero section.
+  const isClickScrolling = useRef(false); //used to temporarily disable the scroll-spy while the page is smoothly scrolling after clicking a tab.
 
   // Show/hide the nav once the hero photo section scrolls past
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
+    //no continuously listening to the scroll event
     const observer = new IntersectionObserver(
       ([entry]) => {
-        const next = !entry.isIntersecting;
+        //If sentinel disappears ; entry.isIntersecting = false
+        //If sentinel appears ; entry.isIntersecting = true
+        const next = !entry.isIntersecting; 
         setVisible(next);
-        onVisibilityChange?.(next);
+        onVisibilityChange?.(next); 
       },
-      { rootMargin: "-64px 0px 0px 0px" }
+      { rootMargin: "-64px 0px 0px 0px" } // it triggers 64px earlier : shrinks the "viewport" the observer checks against, so it triggers slightly early/late relative to the real edges.
     );
-    observer.observe(sentinel);
+    observer.observe(sentinel); // starts observing that invisible div
     return () => observer.disconnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -48,16 +51,22 @@ export default function StickySubNav({
   // Scroll-spy: highlight whichever section tab is currently in view
   useEffect(() => {
     const ids = TABS.map((t) => `section-${t.toLowerCase()}`);
+    
+    // gets all DOM elements
     const elements = ids
       .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => el !== null);
     if (elements.length === 0) return;
 
+    //watches every section
     const observer = new IntersectionObserver(
       (entries) => {
         // Ignore scroll-spy updates while we're mid-animation from a tab click,
         // so the clicked tab doesn't get overridden by whatever briefly intersects.
+
+        //if we click location it will directly go there will not go sequence wise 
         if (isClickScrolling.current) return;
+
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const tab = TABS.find((t) => `section-${t.toLowerCase()}` === entry.target.id);
@@ -66,6 +75,7 @@ export default function StickySubNav({
         });
       },
       { rootMargin: `-${SUBNAV_OFFSET + 1}px 0px -70% 0px`, threshold: 0 }
+      //rootMargin cuts 70% off the bottom, so a section only counts once it's near the top) 
     );
     elements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
@@ -73,10 +83,17 @@ export default function StickySubNav({
 
   const handleTab = (tab: string) => {
     setActiveTab(tab);
+
+    //find the section
     const el = document.getElementById(`section-${tab.toLowerCase()}`);
     if (!el) return;
 
+    //Locks scroll spy
     isClickScrolling.current = true;
+    
+    //getBoundingClientRect().top gives the element's position relative to the current viewport
+    //adding window.scrollY converts that to a position relative to the whole document
+    //subtracting the offset leaves exactly enough gap for the fixed nav.
     const top = el.getBoundingClientRect().top + window.scrollY - SUBNAV_OFFSET;
     window.scrollTo({ top, behavior: "smooth" });
 
@@ -92,8 +109,8 @@ export default function StickySubNav({
       {/* sentinel marks where the hero section ends; nav appears once scrolled past it */}
       <div ref={sentinelRef} />
       <div
-        className={`fixed top-20 left-0 right-0 z-30 bg-white border-b border-neutral-200 transition-transform duration-200 ${
-          visible ? "-translate-y-20" : "-translate-y-[calc(100%+80px)]"
+        className={`fixed top-0 left-0 right-0 z-30 bg-white border-b border-neutral-200 transition-transform duration-200 ${
+          visible ? "-translate-y-0" : "-translate-y-full"
         }`}
       >
         <div className="max-w-[1160px] mx-auto px-6 lg:px-10 flex items-center justify-between h-17">

@@ -38,8 +38,8 @@ export default function AmenitiesModal({
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
-    window.addEventListener("keydown", handleKey);
-    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKey); 
+    document.body.style.overflow = "hidden"; // background can't scroll
     return () => {
       window.removeEventListener("keydown", handleKey);
       document.body.style.overflow = "";
@@ -47,12 +47,14 @@ export default function AmenitiesModal({
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-[70] bg-black/50 flex items-center justify-center p-4 animate-overlay-in">
+    <div className="fixed inset-0 z-[70] bg-black/50 flex items-center justify-center p-4 animate-overlay-in"
+    onClick={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-label="What this place offers"
         className="bg-white w-full rounded-2xl max-w-3xl overflow-hidden max-h-[80vh] relative"
+        onClick={(e) => e.stopPropagation()} // when clicking inside the modal by this Event never reaches backdrop
       >
         <div className="sticky top-0 bg-white px-6 pt-6 pb-2">
           <button

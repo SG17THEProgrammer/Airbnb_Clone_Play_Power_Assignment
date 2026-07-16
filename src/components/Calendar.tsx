@@ -5,14 +5,33 @@ import { ChevronLeft, ChevronRight, LayoutGrid } from "lucide-react";
 
 const WEEKDAYS = ["S", "M", "T", "W", "T", "F", "S"];
 
+// Creates calendar data
 function buildMonth(year: number, month: number) {
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const cells: (number | null)[] = Array(firstDay).fill(null);
+  const firstDay = new Date(year, month, 1).getDay(); // returns how many cells needs to be null ; which weekday does day 1 land on? ; weekday index (0-6) of the 1st
+  const daysInMonth = new Date(year, month + 1, 0).getDate(); // day 0 of *next* month = last day of *this* month
+  // 0 means "one day before the month that is coming"
+
+  //day-0-of-next-month is always, definitionally, the last day of the current month — regardless of how many days that month actually has.
+
+  const cells: (number | null)[] = Array(firstDay).fill(null); // leading blanks before the 1st
+
+  //fill up the array
   for (let d = 1; d <= daysInMonth; d++) cells.push(d);
   return cells;
 }
+// o/p 
+// [
+//  null,
+//  null,
+//  null,
+//  null,
+//  1,
+//  2,
+// .....
+// ]
 
+
+// Renders one month
 function MonthGrid({
   year,
   month,
@@ -32,7 +51,10 @@ function MonthGrid({
   const rows = Math.ceil(cells.length / 7);
 
   // Column (0-6) for a given day-of-month
-  const colOf = (day: number) => cells.indexOf(day) % 7;
+  // Each week is a row.
+  // Each weekday is a column.
+  
+  const colOf = (day: number) => cells.indexOf(day) % 7; // Each column is 100/7% wide. + 0.5 shifts the strip's left edge to the center of the check-in day's column
   const rowOf = (day: number) => Math.floor(cells.indexOf(day) / 7);
 
   const hasRange = selectedStart !== undefined && selectedEnd !== undefined;
@@ -71,13 +93,12 @@ function MonthGrid({
               {day && (
                 <button
                   disabled={isUnavailable}
-                  className={`a11y-focus relative z-10 w-9 h-9 rounded-full text-sm transition-colors ${
-                    isEndpoint
+                  className={`a11y-focus relative z-10 w-9 h-9 rounded-full text-sm transition-colors ${isEndpoint
                       ? "bg-neutral-900 text-white font-medium"
                       : isUnavailable
-                      ? "text-neutral-300 line-through cursor-not-allowed"
-                      : "hover:bg-neutral-100"
-                  }`}
+                        ? "text-neutral-300 line-through cursor-not-allowed"
+                        : "hover:bg-neutral-100"
+                    }`}
                 >
                   {day}
                 </button>
@@ -90,6 +111,7 @@ function MonthGrid({
   );
 }
 
+// Combines two MonthGrids
 export default function Calendar({
   checkInDay,
   checkOutDay,

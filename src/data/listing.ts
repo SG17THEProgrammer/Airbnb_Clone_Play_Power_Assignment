@@ -168,12 +168,12 @@ export const reviewTags = [
 ];
 
 export const reviews = [
-  { id: 1, name: "Amit", timeOnAirbnb: "2 months on Airbnb", when: "1 week ago", rating: 5, text: "Very helpful and responsive team. Safe and peaceful stay. loved everything about the property." , image : "" },
-  { id: 2, name: "Aheesh", timeOnAirbnb: "3 years on Airbnb", when: "2 weeks ago", rating: 5, text: "We had a wonderful stay. The apartment was clean, comfortable, and exactly as shown in the photos. The host was very responsive and helpful throughout our stay. We would definitely recommend this place and would love to stay here again." , image : "./images/aheesh.jpeg" },
-  { id: 3, name: "Samiksha", timeOnAirbnb: "8 months on Airbnb", when: "May 2026", rating: 5, text: "the host nitish was really great help" , image : "./images/sami.jpeg" },
-  { id: 4, name: "Vedant", timeOnAirbnb: "4 years on Airbnb", when: "May 2026", rating: 5, text: "We had an amazing stay at this property in Goa! The entire home was spotless and exceptionally well-maintained, making us feel comfortable from the moment we arrived. The cleanliness standards were truly impressive, with every corner of the house looking fresh and pristine." , image : "" },
-  { id: 5, name: "Vaibhav S", timeOnAirbnb: "3 years on Airbnb", when: "May 2026", rating: 5, text: "Great experience living out there , can't expect more , will always look for it in the future and will recommend my friends too." , image : "./images/vaibh.jpeg" },
-  { id: 6, name: "Mohd", timeOnAirbnb: "5 years on Airbnb", when: "May 2026", rating: 4, text: "Great place. Exactly as described in the listing." , image : "./images/mohd.jpeg" },
+  { id: 1, name: "Amit", timeOnAirbnb: "2 months on Airbnb", when: "1 week ago", rating: 5, text: "Very helpful and responsive team. Safe and peaceful stay. loved everything about the property." , image : ""  , tags:["Comfort"]},
+  { id: 2, name: "Aheesh", timeOnAirbnb: "3 years on Airbnb", when: "2 weeks ago", rating: 5, text: "We had a wonderful stay. The apartment was clean, comfortable, and exactly as shown in the photos. The host was very responsive and helpful throughout our stay. We would definitely recommend this place and would love to stay here again." , image : "./images/aheesh.jpeg"  , tags:[]},
+  { id: 3, name: "Samiksha", timeOnAirbnb: "8 months on Airbnb", when: "May 2026", rating: 5, text: "the host nitish was really great help" , image : "./images/sami.jpeg" , tags:[] },
+  { id: 4, name: "Vedant", timeOnAirbnb: "4 years on Airbnb", when: "May 2026", rating: 5, text: "We had an amazing stay at this property in Goa! The entire home was spotless and exceptionally well-maintained, making us feel comfortable from the moment we arrived. The cleanliness standards were truly impressive, with every corner of the house looking fresh and pristine." , image : ""  , tags:[]},
+  { id: 5, name: "Vaibhav S", timeOnAirbnb: "3 years on Airbnb", when: "May 2026", rating: 5, text: "Great experience living out there , can't expect more , will always look for it in the future and will recommend my friends too." , image : "./images/vaibh.jpeg" , tags:[] },
+  { id: 6, name: "Mohd", timeOnAirbnb: "5 years on Airbnb", when: "May 2026", rating: 4, text: "Great place. Exactly as described in the listing." , image : "./images/mohd.jpeg" , tags:[] },
 ];
 
 export const listing = {

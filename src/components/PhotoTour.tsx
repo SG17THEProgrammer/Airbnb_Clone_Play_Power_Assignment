@@ -19,32 +19,37 @@ export default function PhotoTour({ onClose, onOpenLightbox }: PhotoTourProps) {
   const [activeRoom, setActiveRoom] = useState(rooms[0].id);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  //modal management
   useEffect(() => {
     closeBtnRef.current?.focus();
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", handleKey);
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = "hidden"; 
     return () => {
       window.removeEventListener("keydown", handleKey);
-      document.body.style.overflow = "";
+      document.body.style.overflow = ""; //cleanup: restore scroll on close/unmount
+      // Without it, closing the modal would leave the page permanently unscrollable.
     };
   }, [onClose]);
 
+  // Scroll Spy
   useEffect(() => {
-    const root = scrollContainerRef.current;
+    const root = scrollContainerRef.current; // scroll inside the component itself
     if (!root) return;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            // Suppose Whenever Kitchen enters visible area setActiveRoom(id); now the Kitchen will be highlighted
             const id = entry.target.getAttribute("data-room-id");
             if (id) setActiveRoom(id);
           }
         });
       },
       { root, rootMargin: `-${HEADER_H + NAV_H + 1}px 0px -70% 0px`, threshold: 0 }
+      //rootMargin shrinks the "viewport" the observer checks against, so it triggers slightly early/late relative to the real edges.
     );
     Object.values(sectionRefs.current).forEach((el) => el && observer.observe(el));
     return () => observer.disconnect();
@@ -52,14 +57,29 @@ export default function PhotoTour({ onClose, onOpenLightbox }: PhotoTourProps) {
 
   const scrollToRoom = (id: string) => {
     setActiveRoom(id);
-    const el = sectionRefs.current[id];
+
+    const el = sectionRefs.current[id]; // gets the section that is clicked 
     const container = scrollContainerRef.current;
-    if (el && container) {
-      const top = el.offsetTop - (HEADER_H + NAV_H);
-      container.scrollTo({ top, behavior: "smooth" });
-    }
+
+    if (!el || !container) return;
+
+    // relative position inside container 
+    // getBoundingClientRect().top gives the element's position relative to the current viewport
+    const top =
+      container.scrollTop +
+      el.getBoundingClientRect().top -
+      container.getBoundingClientRect().top -
+      HEADER_H;     // heading should not be hidden so subtracted that 
+
+
+
+    container.scrollTo({
+      top,
+      behavior: "smooth",
+    });
   };
 
+  // eg : Translating "3rd photo of room 5" into a global Lightbox index
   let runningIndex = 0;
   const roomStartIndex: Record<string, number> = {};
   rooms.forEach((r) => {
@@ -67,6 +87,17 @@ export default function PhotoTour({ onClose, onOpenLightbox }: PhotoTourProps) {
     runningIndex += r.photos.length;
   });
 
+// global index 
+//   roomStartIndex
+// {
+// living :0
+// kitchen:5
+// bedroom:8
+// }
+
+// Click Kitchen photo,  index = 2 ; Actually opens 5+2=7
+
+  // for rendering room photos
   const renderRoomPhotos = (
     room: (typeof rooms)[number],
     startIndex: number
@@ -119,7 +150,7 @@ export default function PhotoTour({ onClose, onOpenLightbox }: PhotoTourProps) {
           </>
         );
 
-      // LR2 : L -> 2 -> L
+      // LR2 : L -> 2 -> L -> 2 -> L 
       case "living-room-2":
         return (
           <>
@@ -135,7 +166,7 @@ export default function PhotoTour({ onClose, onOpenLightbox }: PhotoTourProps) {
       case "full-kitchen":
         return renderPair(room.photos, 0);
 
-      // Bedroom : L -> 2 -> L
+      // Bedroom : L -> 2 -> L -> 2 
       case "bedroom":
         return (
           <>
@@ -160,7 +191,7 @@ export default function PhotoTour({ onClose, onOpenLightbox }: PhotoTourProps) {
           </>
         );
 
-      // Exterior : L -> 2 -> L
+      // Exterior : L -> 2 -> L -> 2 
       case "exterior":
         return (
           <>
@@ -180,7 +211,7 @@ export default function PhotoTour({ onClose, onOpenLightbox }: PhotoTourProps) {
           </>
         );
 
-      // Additional : L -> 2 -> 2 -> 2 -> L
+      // Additional : L -> 2 -> L -> 2 -> L -> 2 -> L
       case "additional":
         return (
           <>

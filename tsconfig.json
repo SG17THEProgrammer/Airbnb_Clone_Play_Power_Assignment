@@ -1,25 +1,26 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "ES2017", // which JavaScript version to compile to 
+    "lib": ["dom", "dom.iterable", "esnext"], // which built-in APIs exist
+                                  //newest JavaScript features
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
+    "strict": true, // enables all strict type-checking rules
+    "noEmit": true, // doesn't generate any JavaScript from TS
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "bundler", // Controls how imports are resolved
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
+    "jsx": "react-jsx", // Controls how JSX is transformed ; no need of import React from "react";
     "incremental": true,
     "plugins": [
       {
-        "name": "next"
+        "name": "next" //Enables the Next.js TypeScript plugin
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"] // alias
     }
   },
   "include": [

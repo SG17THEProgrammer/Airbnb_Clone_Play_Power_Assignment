@@ -40,6 +40,13 @@ export default function Home() {
   const [amenitiesOpen, setAmenitiesOpen] = useState(false);
   const [subNavVisible, setSubNavVisible] = useState(false);
   const [seeMore, setSeeMore] = useState(false)
+  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [reviewSearchQuery, setReviewSearchQuery] = useState("");
+
+  // Clicking an already-active tag clears the filter (toggle, not just select)
+  const handleTagClick = (tag: string) => {
+    setActiveTag((current) => (current === tag ? null : tag));
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -137,8 +144,20 @@ export default function Home() {
             so it naturally stops sticking once its parent grid row is scrolled past */}
         <div className="mt-8">
           <div id="section-reviews">
-            <RatingOverview rating={listing.rating} categories={ratingCategories} tags={reviewTags} />
-            <Reviews reviews={reviews} reviewCount={listing.reviewCount} />
+            <RatingOverview
+              rating={listing.rating}
+              categories={ratingCategories}
+              tags={reviewTags}
+              activeTag={activeTag}
+              onTagClick={handleTagClick}
+            />
+            <Reviews
+              reviews={reviews}
+              reviewCount={listing.reviewCount}
+              activeTag={activeTag}
+              searchQuery={reviewSearchQuery}
+              onSearchChange={setReviewSearchQuery}
+            />
           </div>
 
           <div id="section-location">

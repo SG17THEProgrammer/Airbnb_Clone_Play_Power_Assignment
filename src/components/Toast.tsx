@@ -17,6 +17,8 @@ export default function Toast({ message, show }: ToastProps) {
 
   if (!rendered) return null;
 
+  // If this just did {show && <div>...}, the toast would vanish instantly the moment show becomes false — no time for the slide-down CSS animation to play. rendered stays true through the exit animation; only onAnimationEnd (a real DOM event fired when the CSS animation finishes) flips it to false and actually removes the element.
+
   return (
     <div
       role="status"

@@ -42,10 +42,14 @@ export default function RatingOverview({
   rating,
   categories,
   tags,
+  activeTag,
+  onTagClick,
 }: {
   rating: number;
   categories: RatingCategory[];
   tags: Tag[];
+  activeTag: string | null;
+  onTagClick: (tag: string) => void;
 }) {
   const rest = categories.filter((c) => c.label !== "Overall rating");
 
@@ -102,10 +106,15 @@ export default function RatingOverview({
         {tags.map((t) => {
         const conf = tagIcons[t.label];
         const Icon = conf?.icon;
+        const isActive = activeTag === t.label;
         return (
-          <span
+          <button
             key={t.label}
-            className="flex items-center gap-2 text-sm border border-neutral-300 rounded-xl p-2 px-5 border shrink-0"
+            onClick={() => onTagClick(t.label)}
+            aria-pressed={isActive}
+            className={`a11y-focus flex items-center gap-2 text-sm rounded-xl p-2 px-5 border shrink-0 transition-colors ${
+              isActive ? "border-neutral-900 bg-neutral-50 font-semibold" : "border-neutral-300 hover:bg-neutral-50"
+            }`}
           >
             {Icon && (
               <span className={`flex items-center justify-center w-7 h-7 rounded-full ${conf.bg} ${conf.color}`}>
@@ -113,10 +122,18 @@ export default function RatingOverview({
               </span>
             )}
             {t.label} {t.count}
-          </span>
+          </button>
         );
       })}
       </div>
+      {activeTag && (
+        <button
+          onClick={() => onTagClick(activeTag)}
+          className="a11y-focus text-sm underline font-medium mt-4"
+        >
+          Clear filter ({activeTag}) ✕
+        </button>
+      )}
     </div>
   );
 }
